@@ -43,6 +43,67 @@ def index(request):
     }
     return render(request, 'kummapp/index.html', context)
 
+def logout_view(request):
+    logout(request)
+    messages.info(request, "You have been successfully logged out.")
+    return redirect('login')
+
+
+@login_required
+def new_patient(request):
+    if request.method == 'POST':
+        form = PatientForm(request.POST)
+        if form.is_valid():
+            patient = form.save()
+            messages.success(request, f"Patient {patient.first_name} {patient.last_name} added successfully.")
+            return redirect('patient_detail', patient_id=patient.id)
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = PatientForm()
+    return render(request, 'kummapp/new_patient.html', {'form': form})
+
+@login_required
+def edit_patient(request, patient_id):
+    patient = get_object_or_404(Patient, id=patient_id)
+    if request.method == 'POST':
+        form = PatientForm(request.POST, instance=patient)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Patient {patient.first_name} {patient.last_name} updated successfully.")
+            return redirect('patient_detail', patient_id=patient.id)
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = PatientForm(instance=patient)
+    return render(request, 'kummapp/edit_patient.html', {'form': form, 'patient': patient})
+
+@login_required
+def delete_patient(request, patient_id):
+    patient = get_object_or_404(Patient, id=patient_id)
+    if request.method == 'POST':
+        patient_name = f"{patient.first_name} {patient.last_name}"
+        patient.delete()
+        messages.success(request, f"Patient {patient_name} deleted successfully.")
+        return redirect('patient_list')
+    return render(request, 'kummapp/delete_patient_confirm.html', {'patient': patient})
+
+@login_required
+def patient_list(request):
+    patients = Patient.objects.all()
+    return render(request, 'kummapp/patient_list.html', {'patients': patients})
+
+@login_required
+def patient_detail(request, patient_id):
+    patient = Patient.objects.get(id=patient_id)
+    appointments = Appointment.objects.filter(patient=patient).order_by('-appointment_date')
+    medical_records = MedicalRecord.objects.filter(patient=patient).order_by('-visit_date')
+    context = {
+        'patient': patient,
+        'appointments': appointments,
+        'medical_records': medical_records
+    }
+    return render(request, 'kummapp/patient_detail.html', context)
 
 @login_required
 def appointment_list(request):
