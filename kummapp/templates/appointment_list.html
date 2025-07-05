@@ -1,0 +1,43 @@
+{% extends 'kummapp/layout.html' %}
+{% load static %}
+
+{% block title %}Appointments{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Appointments</h1>
+    <a href="{% url 'add_appointment' %}" class="btn btn-primary mb-3">Schedule New Appointment</a>
+
+    {% if appointments %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date & Time</th>
+                    <th>Reason</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td>{{ appointment.patient }}</td>
+                    <td>{{ appointment.doctor }}</td>
+                    <td>{{ appointment.appointment_date|date:"Y-m-d H:i" }}</td>
+                    <td>{{ appointment.reason|truncatewords:10 }}</td>
+                    <td>{{ appointment.notes|truncatewords:10 }}</td>
+                    <td>
+                        <a href="{% url 'view_appointment' appointment.id %}" class="btn btn-sm btn-info">View</a>
+                        <a href="{% url 'edit_appointment' appointment.id %}" class="btn btn-sm btn-warning">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No appointments scheduled yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
