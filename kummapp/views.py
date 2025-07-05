@@ -153,3 +153,68 @@ def delete_appointment(request, appointment_id):
         messages.success(request, f"{appointment_info} cancelled successfully.")
         return redirect('appointment_list')
     return render(request, 'kummapp/delete_appointment_confirm.html', {'appointment': appointment})
+
+
+# Medical Record Views
+@login_required
+@doctor_required
+def add_medical_record(request, patient_id):
+    patient = get_object_or_404(Patient, id=patient_id)
+    if request.method == 'POST':
+        form = MedicalRecordForm(request.POST, user=request.user) 
+        if form.is_valid():
+            record = form.save(commit=False)
+            record.patient = patient
+            record.save()
+            messages.success(request, f"Medical record for {patient.first_name} {patient.last_name} added successfully.")
+            return redirect('patient_detail', patient_id=patient.id)
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = MedicalRecordForm(user=request.user)
+    return render(request, 'kummapp/add_medical_record.html', {'form': form, 'patient': patient})
+
+@login_required
+def edit_medical_record(request, record_id):
+    record = get_object_or_404(MedicalRecord, id=record_id)
+    can_edit = False
+    if request.user.is_staff:
+        can_edit = True
+    elif hasattr(request.user, 'doctor') and record.doctor == request.user.doctor:
+        can_edit = True
+
+    if not can_edit:
+        messages.error(request, "You do not have permission to edit this medical record.")
+        return redirect('patient_detail', patient_id=record.patient.id)
+
+    if request.method == 'POST':
+        form = MedicalRecordForm(request.POST, instance=record, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Medical record updated successfully.")
+            return redirect('patient_detail', patient_id=record.patient.id)
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = MedicalRecordForm(instance=record, user=request.user)
+    return render(request, 'kummapp/edit_medical_record.html', {'form': form, 'record': record, 'patient': record.patient})
+
+@login_required
+def delete_medical_record(request, record_id):
+    record = get_object_or_404(MedicalRecord, id=record_id)
+    patient_id = record.patient.id
+    can_delete = False
+    if request.user.is_staff:
+        can_delete = True
+    elif hasattr(request.user, 'doctor') and record.doctor == request.user.doctor:
+        can_delete = True
+
+    if not can_delete:
+        messages.error(request, "You do not have permission to delete this medical record.")
+        return redirect('patient_detail', patient_id=patient_id)
+
+    if request.method == 'POST':
+        record.delete()
+        messages.success(request, "Medical record deleted successfully.")
+        return redirect('patient_detail', patient_id=patient_id)
+    return render(request, 'kummapp/delete_medical_record_confirm.html', {'record': record, 'patient': record.patient})
