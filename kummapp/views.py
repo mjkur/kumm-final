@@ -43,11 +43,63 @@ def index(request):
     }
     return render(request, 'kummapp/index.html', context)
 
+@login_required
+def patient_search_view(request):
+    query = request.GET.get('query', '').strip()
+    patients = Patient.objects.none() 
+
+    if query:
+        search_terms = query.split()
+        if search_terms:
+            term_queries = []
+            for term in search_terms:
+                term_queries.append(Q(first_name__icontains=term) | Q(last_name__icontains=term))
+            
+            if term_queries:
+                combined_q = reduce(operator.and_, term_queries)
+                patients = Patient.objects.filter(combined_q)
+
+        if patients.count() == 1:
+            # If exactly one patient matches, redirect to their detail page
+            return redirect('patient_detail', patient_id=patients.first().id)
+    
+    return render(request, 'kummapp/patient_list.html', {'patients': patients, 'query': query})
+
+@login_required
+def calendar_view(request):
+    appointments = Appointment.objects.all().order_by('appointment_date')
+    context = {
+        'appointments': appointments
+    }
+    return render(request, 'kummapp/calendar.html', context)
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"Welcome back, {username}.")
+                # Check if next is in POST data, otherwise redirect to index
+                next_url = request.POST.get('next')
+                if next_url:
+                    return redirect(next_url)
+                return redirect('index')
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Invalid username or password.") # Or form.errors
+    else:
+        form = AuthenticationForm()
+    return render(request, 'kummapp/login.html', {'form': form, 'next': request.GET.get('next', '')})
+
 def logout_view(request):
     logout(request)
     messages.info(request, "You have been successfully logged out.")
     return redirect('login')
-
 
 @login_required
 def new_patient(request):
@@ -154,7 +206,10 @@ def delete_appointment(request, appointment_id):
         return redirect('appointment_list')
     return render(request, 'kummapp/delete_appointment_confirm.html', {'appointment': appointment})
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> other-backend
 # Medical Record Views
 @login_required
 @doctor_required
@@ -218,3 +273,24 @@ def delete_medical_record(request, record_id):
         messages.success(request, "Medical record deleted successfully.")
         return redirect('patient_detail', patient_id=patient_id)
     return render(request, 'kummapp/delete_medical_record_confirm.html', {'record': record, 'patient': record.patient})
+<<<<<<< HEAD
+=======
+
+# Auth Views
+def register_view(request):
+    # TODO: nieużywane na razie
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user) # Log in the user automatically after registration
+            messages.success(request, "Registration successful. You are now logged in.")
+            # Redirect to a page to create a Doctor profile or to index
+            # For now, redirect to index. A more complete flow would guide Doctor creation.
+            return redirect('index') 
+        else:
+            messages.error(request, "Registration unsuccessful. Please correct the errors below.")
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+>>>>>>> other-backend
