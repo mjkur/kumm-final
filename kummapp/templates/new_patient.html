@@ -1,0 +1,15 @@
+{% extends 'kummapp/layout.html' %}
+
+{% block title %}Add New Patient{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Add New Patient</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Save Patient</button>
+    </form>
+    <a href="{% url 'patient_list' %}" class="btn btn-secondary mt-2">Back to Patient List</a>
+</div>
+{% endblock %}

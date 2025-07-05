@@ -1,0 +1,47 @@
+{% extends 'kummapp/layout.html' %}
+{% load static %}
+
+{% block title %}{% if query %}Search Results for "{{ query }}"{% else %}Patient List{% endif %}{% endblock %}
+
+{% block content %}
+<div class="patient-list-container">
+    <h1>{% if query %}Search Results for "{{ query }}"{% else %}Patient List{% endif %}</h1>
+
+    <form method="GET" action="{% url 'patient_search' %}" class="form-inline mb-3">
+        <input type="text" name="query" class="form-control mr-2" placeholder="Search Patients..." value="{{ query|default:'' }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <a href="{% url 'new_patient' %}" class="btn">Add New Patient</a>
+    <br><br>
+    {% if patients %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Date of Birth</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td>{{ patient.first_name }} {{ patient.last_name }}</td>
+                    <td>{{ patient.date_of_birth|date:"Y-m-d" }}</td>
+                    <td>{{ patient.email }}</td>
+                    <td>{{ patient.phone_number }}</td>
+                    <td>
+                        <a href="{% url 'patient_detail' patient.id %}" class="btn btn-info btn-sm">View</a>
+                        <a href="{% url 'edit_patient' patient.id %}" class="btn btn-warning btn-sm">Edit</a> 
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>{% if query %}No patients found matching "{{ query }}".{% else %}No patients found.{% endif %}</p>
+    {% endif %}
+</div>
+{% endblock %}
