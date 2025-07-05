@@ -4,7 +4,7 @@
 
 0. Wymagania wstępne
 ```zsh
-    git clone https://github.com/mjkur/kumm.git
+    git clone https://github.com/mjkur/kumm-final.git
     cd kumm
 ``` 
 
