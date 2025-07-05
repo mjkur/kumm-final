@@ -1,0 +1,27 @@
+
+{% extends 'kummapp/layout.html' %}
+
+{% block title %}View Appointment{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Appointment Details</h1>
+    <div class="card">
+        <div class="card-header">
+            Appointment on {{ appointment.appointment_date|date:"Y-m-d H:i" }}
+        </div>
+        <div class="card-body">
+            <p><strong>Patient:</strong> {{ appointment.patient }}</p>
+            <p><strong>Doctor:</strong> {{ appointment.doctor }}</p>
+            <p><strong>Reason:</strong> {{ appointment.reason }}</p>
+            <p><strong>Notes:</strong></p>
+            <p>{{ appointment.notes|linebreaksbr }}</p>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'appointment_list' %}" class="btn btn-secondary">Back to List</a>
+            <a href="{% url 'edit_appointment' appointment.id %}" class="btn btn-warning">Edit Appointment</a>
+            <a href="{% url 'delete_appointment' appointment.id %}" class="btn btn-danger">Delete Appointment</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
