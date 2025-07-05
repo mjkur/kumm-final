@@ -4,8 +4,8 @@
 
 0. Wymagania wstępne
 ```zsh
-    git clone https://github.com/mjkur/kumm-final.git
-    cd kumm-final
+    git clone https://github.com/mjkur/kumm.git
+    cd kumm
 ``` 
 
 1. Docker (jeśli posiadasz Dockera i Docker Compose):
