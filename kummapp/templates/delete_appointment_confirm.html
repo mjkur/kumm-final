@@ -1,0 +1,15 @@
+{% extends 'kummapp/layout.html' %}
+
+{% block title %}
+    Confirm Delete Appointment
+{% endblock %}
+
+{% block content %}
+    <h2>Confirm Delete Appointment</h2>
+    <p>Are you sure you want to delete the appointment for {{ appointment.patient.first_name }} {{ appointment.patient.last_name }} with Dr. {{ appointment.doctor.last_name }} on {{ appointment.date_time|date:"Y-m-d H:i" }}?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, delete</button>
+        <a href="{% url 'view_appointment' appointment.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}
