@@ -206,10 +206,7 @@ def delete_appointment(request, appointment_id):
         return redirect('appointment_list')
     return render(request, 'kummapp/delete_appointment_confirm.html', {'appointment': appointment})
 
-<<<<<<< HEAD
 
-=======
->>>>>>> other-backend
 # Medical Record Views
 @login_required
 @doctor_required
@@ -273,8 +270,6 @@ def delete_medical_record(request, record_id):
         messages.success(request, "Medical record deleted successfully.")
         return redirect('patient_detail', patient_id=patient_id)
     return render(request, 'kummapp/delete_medical_record_confirm.html', {'record': record, 'patient': record.patient})
-<<<<<<< HEAD
-=======
 
 # Auth Views
 def register_view(request):
@@ -293,4 +288,3 @@ def register_view(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
->>>>>>> other-backend
