@@ -1,0 +1,17 @@
+{% load static %}
+{% extends 'kummapp/layout.html' %}
+
+{% block title %}Edit Medical Record{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Edit Medical Record for {{ patient.first_name }} {{ patient.last_name }}</h2>
+    <p>Record Date: {{ record.visit_date|date:"Y-m-d" }}</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{% url 'patient_detail' patient.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

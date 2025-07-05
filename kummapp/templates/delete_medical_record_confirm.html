@@ -1,0 +1,16 @@
+{% extends 'kummapp/layout.html' %}
+
+{% block title %}
+    Confirm Delete Medical Record
+{% endblock %}
+
+{% block content %}
+    <h2>Confirm Delete Medical Record</h2>
+    <p>Are you sure you want to delete the medical record for {{ patient.first_name }} {{ patient.last_name }} dated {{ record.date_recorded|date:"Y-m-d" }}?</p>
+    <p><strong>Details:</strong> {{ record.details|truncatewords:30 }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, delete</button>
+        <a href="{% url 'patient_detail' patient.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}
